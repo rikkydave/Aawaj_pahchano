@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="hi"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#087e70">
+<title>आवाज़ पहचानो - नन्हे दोस्त</title>
+<style>
+:root{--green:#087e70;--dark:#07594f;--cream:#fff9e9;--yellow:#ffd85e;--pink:#ff8db0}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif;color:#163c36;background:linear-gradient(180deg,#9ce8f8 0%,#e1fbff 34%,#d8f8cf 100%);min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.24;background-image:radial-gradient(circle at 15% 12%,white 0 3px,transparent 4px),radial-gradient(circle at 80% 18%,white 0 4px,transparent 5px),radial-gradient(circle at 70% 70%,white 0 3px,transparent 4px);background-size:90px 100px}
+.app{position:relative;max-width:520px;margin:auto;padding:15px 15px 22px}
+header{display:flex;align-items:center;gap:12px;margin:3px 0 14px}.logo{width:56px;height:56px;border-radius:20px;background:#087e70;display:grid;place-items:center;font-size:32px;box-shadow:0 5px 0 #07594f;color:white}
+h1{font-size:23px;margin:0;line-height:1.2;color:#07594f}.sub{font-size:12px;color:#316a61;margin-top:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}.pill{background:white;border-radius:99px;padding:7px 12px;font-size:13px;font-weight:800;box-shadow:0 3px 0 #b8e8dd}.score{font-weight:900;color:#795500}
+.card{background:rgba(255,255,255,.93);border:3px solid white;border-radius:26px;padding:15px;box-shadow:0 8px 0 #a9dfd0}
+.hero{border-radius:22px;background:linear-gradient(160deg,#fff9d8,#fff);padding:12px;text-align:center}
+.art{height:195px;display:flex;align-items:center;justify-content:center;font-size:120px;text-shadow:0 7px 0 #00000008;filter:drop-shadow(0 5px 2px #225b351c)}
+.name{font-size:29px;font-weight:950;color:#087e70;margin:0}.instruction{font-size:14px;color:#52776f;margin:4px 0 0}
+button{font:inherit;border:0;cursor:pointer;touch-action:manipulation;font-weight:850}
+.big{width:100%;border-radius:18px;background:#087e70;color:white;padding:15px;margin-top:13px;font-size:17px;box-shadow:0 5px 0 #07594f}
+.big:active,.next:active{transform:translateY(2px);box-shadow:none}
+.controls{display:flex;gap:9px;margin-top:10px}.small{flex:1;border-radius:15px;padding:12px 6px;background:#fff;color:#07594f;box-shadow:0 3px 0 #c5e8dc;font-size:14px}
+.animalgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.animaldot{background:#ffffffc9;border:2px solid white;border-radius:14px;padding:7px 2px 5px;text-align:center}
+.animaldot span{display:block;font-size:25px}.animaldot small{font-size:10px;color:#52776f;font-weight:750}
+.footer{margin:16px 0 0;text-align:center;font-size:12px;font-weight:800;color:#245e55;line-height:1.5}
+.music{display:flex;align-items:center;justify-content:space-between;background:#ffffffd9;border-radius:15px;padding:10px 12px;margin-top:12px;font-size:13px;font-weight:800}
+.toggle{background:#d9f4e7;color:#087e70;border-radius:99px;padding:8px 12px}
+#message{display:none;margin-top:10px;border-radius:15px;background:#fff2bd;padding:10px;text-align:center;font-weight:800}
+@media(max-width:360px){.art{height:165px;font-size:100px}.animalgrid{grid-template-columns:repeat(4,1fr)}}
+</style></head>
+<body><div class="app">
+<header><div class="logo">🐾</div><div><h1>आवाज़ पहचानो!</h1><div class="sub">नन्हे दोस्तों का सुनो और सीखो गेम</div></div></header>
+<div class="top"><span class="pill" id="level">जानवर 1 / 8</span><span class="pill score">⭐ अंक: <b id="score">0</b></span></div>
+<main class="card">
+ <div class="hero">
+  <div class="art" id="art">🐮</div>
+  <div class="name" id="name">गाय</div>
+  <p class="instruction">चित्र देखो और इसकी आवाज़ सुनो!</p>
+ </div>
+ <button class="big" id="sound">🔊 जानवर की आवाज़ सुनें</button>
+ <div class="controls"><button class="small" id="again">↻ फिर से सुनें</button><button class="small" id="next">अगला जानवर ➜</button></div>
+ <div class="music"><span>🎵 हल्का बैकग्राउंड म्यूजिक</span><button class="toggle" id="musicToggle">म्यूजिक चालू</button></div>
+ <div class="animalgrid" id="grid"></div>
+ <div id="message"></div>
+</main>
+<div class="footer">सीखें • खेलें • मुस्कुराएँ 🌈<br>App developed by DEEVAKAR DAVE, बाड़मेर</div>
+</div>
+<script>
+const animals=[
+ {name:"गाय",emoji:"🐮",f:115,e:82,w:4,type:"sawtooth"},
+ {name:"शेर",emoji:"🦁",f:92,e:45,w:11,type:"sawtooth"},
+ {name:"कुत्ता",emoji:"🐶",f:185,e:90,w:18,type:"sawtooth"},
+ {name:"बिल्ली",emoji:"🐱",f:650,e:360,w:7,type:"triangle"},
+ {name:"हाथी",emoji:"🐘",f:330,e:150,w:3,type:"sawtooth"},
+ {name:"बत्तख",emoji:"🦆",f:440,e:235,w:13,type:"square"},
+ {name:"घोड़ा",emoji:"🐴",f:260,e:170,w:9,type:"triangle"},
+ {name:"बंदर",emoji:"🐵",f:520,e:290,w:15,type:"triangle"}
+];
+let index=0,score=0,ctx=null,musicOn=false,musicTimer=null,note=0;
+const $=id=>document.getElementById(id);
+function render(){
+ const a=animals[index];$("level").textContent=`जानवर ${index+1} / ${animals.length}`;
+ $("score").textContent=score;$("art").textContent=a.emoji;$("name").textContent=a.name;
+ $("next").textContent=index===animals.length-1?"फिर से खेलें ↻":"अगला जानवर ➜";
+ $("message").style.display="none";
+ $("grid").innerHTML=animals.map((x,i)=>`<div class="animaldot" style="${i===index?'border-color:#ffd85e;background:#fff7cf':''}"><span>${x.emoji}</span><small>${x.name}</small></div>`).join("");
+}
+function audio(){
+ if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();
+ if(ctx.state==="suspended")ctx.resume();
+ return ctx;
+}
+function animalSound(){
+ try{
+  const c=audio(),a=animals[index],t=c.currentTime;
+  const osc=c.createOscillator(),gain=c.createGain(),mod=c.createOscillator(),mg=c.createGain();
+  osc.type=a.type;osc.frequency.setValueAtTime(a.f,t);osc.frequency.exponentialRampToValueAtTime(Math.max(40,a.e),t+.9);
+  mod.frequency.value=a.w;mg.gain.value=a.name==="शेर"?70:a.name==="हाथी"?130:28;mod.connect(mg);mg.connect(osc.frequency);
+  gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.20,t+.05);gain.gain.exponentialRampToValueAtTime(.0001,t+1.05);
+  osc.connect(gain);gain.connect(c.destination);
+  if(a.name==="कुत्ता"){for(let k=0;k<3;k++){gain.gain.setValueAtTime(.0001,t+k*.29);gain.gain.setValueAtTime(.2,t+k*.29+.03);gain.gain.setValueAtTime(.0001,t+k*.29+.14)}}
+  osc.start(t);mod.start(t);osc.stop(t+1.1);mod.stop(t+1.1);
+  if(!a.heard){a.heard=true;score+=5;$("score").textContent=score}
+ }catch(e){$("message").textContent="आवाज़ चलाने में समस्या हुई। फिर कोशिश करें।";$("message").style.display="block"}
+}
+function startMusic(){
+ const c=audio();musicOn=true;$("musicToggle").textContent="म्यूजिक बंद";
+ const notes=[261.63,329.63,392,329.63,293.66,349.23,392,349.23];
+ function tick(){
+  if(!musicOn)return;
+  const t=c.currentTime,osc=c.createOscillator(),g=c.createGain();
+  osc.type="sine";osc.frequency.value=notes[note%notes.length];g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.035,t+.12);g.gain.exponentialRampToValueAtTime(.0001,t+.62);osc.connect(g);g.connect(c.destination);osc.start(t);osc.stop(t+.65);
+  note++;musicTimer=setTimeout(tick,620);
+ }
+ tick();
+}
+function stopMusic(){musicOn=false;if(musicTimer)clearTimeout(musicTimer);$("musicToggle").textContent="म्यूजिक चालू"}
+function next(){
+ index++;
+ if(index>=animals.length){index=0;score=0;animals.forEach(a=>a.heard=false);$("message").textContent="बहुत बढ़िया! चलो फिर से जानवरों की आवाज़ सुनें।";$("message").style.display="block"}
+ render();
+}
+$("sound").onclick=animalSound;$("again").onclick=animalSound;$("next").onclick=next;
+$("musicToggle").onclick=()=>musicOn?stopMusic():startMusic();
+render();
+</script></body></html>
